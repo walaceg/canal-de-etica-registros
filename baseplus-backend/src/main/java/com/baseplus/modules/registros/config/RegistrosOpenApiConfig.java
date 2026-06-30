@@ -19,11 +19,11 @@ public class RegistrosOpenApiConfig {
                         .version("1.0.2")
                         .description("APIs publica e interna para registros do Canal de Etica."))
                 .components(new Components()
-                        .addSecuritySchemes("ApiKeyAuth", new SecurityScheme()
+                        .addSecuritySchemes("API Key", new SecurityScheme()
                                 .type(SecurityScheme.Type.APIKEY)
                                 .in(SecurityScheme.In.HEADER)
                                 .name("X-API-Key"))
-                        .addSecuritySchemes("bearerAuth", new SecurityScheme()
+                        .addSecuritySchemes("Bearer Authentication", new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
                                 .bearerFormat("JWT")));

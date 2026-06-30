@@ -39,7 +39,7 @@ public class RegistroPublicoController {
     @Operation(
             summary = "Receber registro publico",
             description = "Recebe um registro do Canal de Etica via multipart/form-data. Requer API Key no header X-API-Key.",
-            security = @SecurityRequirement(name = "ApiKeyAuth")
+            security = @SecurityRequirement(name = "API Key")
     )
     @Parameter(name = "X-API-Key", description = "API Key do cliente autorizado.", required = true, in = ParameterIn.HEADER)
     @io.swagger.v3.oas.annotations.parameters.RequestBody(

@@ -46,7 +46,7 @@ public class RegistroController {
     @Operation(
             summary = "Listar registros",
             description = "Lista registros recebidos com paginacao e filtros opcionais. Requer usuario autenticado com permissao REGISTROS_VIEW.",
-            security = @SecurityRequirement(name = "bearerAuth")
+            security = @SecurityRequirement(name = "Bearer Authentication")
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -114,7 +114,7 @@ public class RegistroController {
     @Operation(
             summary = "Detalhar registro",
             description = "Retorna os detalhes de um registro recebido. Requer usuario autenticado com permissao REGISTROS_DETAIL.",
-            security = @SecurityRequirement(name = "bearerAuth")
+            security = @SecurityRequirement(name = "Bearer Authentication")
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
