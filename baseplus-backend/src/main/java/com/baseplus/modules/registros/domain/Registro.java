@@ -12,7 +12,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -38,7 +37,6 @@ public class Registro {
     @Column(updatable = false, length = 40)
     private String telefone;
 
-    @Lob
     @Column(nullable = false, updatable = false, columnDefinition = "text")
     private String relato;
 
