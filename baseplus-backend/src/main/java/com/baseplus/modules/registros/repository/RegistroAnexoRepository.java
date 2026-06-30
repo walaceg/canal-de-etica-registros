@@ -10,4 +10,6 @@ import com.baseplus.modules.registros.domain.RegistroAnexo;
 public interface RegistroAnexoRepository extends JpaRepository<RegistroAnexo, UUID> {
 
     List<RegistroAnexo> findByRegistro_IdOrderByCriadoEmAsc(UUID registroId);
+
+    long countByRegistro_Id(UUID registroId);
 }

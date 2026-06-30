@@ -28,6 +28,8 @@ public final class AdminAccessDefaults {
             {"ORGANIZATION_UNITS_CREATE", "Criar estrutura organizacional."},
             {"ORGANIZATION_UNITS_EDIT", "Editar estrutura organizacional."},
             {"ORGANIZATION_UNITS_DELETE", "Excluir estrutura organizacional."},
+            {"REGISTROS_VIEW", "Visualizar registros do Canal de Etica."},
+            {"REGISTROS_DETAIL", "Visualizar detalhes de registros do Canal de Etica."},
             {"BRANDING_VIEW", "Visualizar branding."},
             {"BRANDING_EDIT", "Editar branding."},
             {"BRANDING_UPLOAD_ASSETS", "Enviar assets de branding."},

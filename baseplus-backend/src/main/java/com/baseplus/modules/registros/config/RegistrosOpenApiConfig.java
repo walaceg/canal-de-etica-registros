@@ -17,11 +17,15 @@ public class RegistrosOpenApiConfig {
                 .info(new Info()
                         .title("Canal de Etica Registros API")
                         .version("1.0.2")
-                        .description("API publica para recebimento de registros do Canal de Etica."))
+                        .description("APIs publica e interna para registros do Canal de Etica."))
                 .components(new Components()
                         .addSecuritySchemes("ApiKeyAuth", new SecurityScheme()
                                 .type(SecurityScheme.Type.APIKEY)
                                 .in(SecurityScheme.In.HEADER)
-                                .name("X-API-Key")));
+                                .name("X-API-Key"))
+                        .addSecuritySchemes("bearerAuth", new SecurityScheme()
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")));
     }
 }
