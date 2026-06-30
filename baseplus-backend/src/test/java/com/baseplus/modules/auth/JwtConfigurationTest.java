@@ -22,7 +22,7 @@ class JwtConfigurationTest {
     @Test
     void shouldScopeDevelopmentJwtFallbackToDevelopmentProfile() throws IOException {
         assertThat(getProperty("application-dev.yml", "jwt.secret"))
-                .isEqualTo("${JWT_SECRET:baseplus-dev-secret-change-before-production-2026}");
+                .isEqualTo("${JWT_SECRET:canal-de-etica-registros-dev-secret-change-before-production-2026}");
     }
 
     private Object getProperty(String resourceName, String propertyName) throws IOException {

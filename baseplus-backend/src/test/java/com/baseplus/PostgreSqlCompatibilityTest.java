@@ -18,7 +18,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers(disabledWithoutDocker = true)
 class PostgreSqlCompatibilityTest {
 
-    private static final int EXPECTED_MIGRATIONS = 13;
+    private static final int EXPECTED_MIGRATIONS = 14;
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine")
@@ -45,7 +45,7 @@ class PostgreSqlCompatibilityTest {
                 Integer.class
         );
         Integer latestMigration = jdbcTemplate.queryForObject(
-                "select count(*) from flyway_schema_history where version = '13' and success",
+                "select count(*) from flyway_schema_history where version = '14' and success",
                 Integer.class
         );
 

@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.baseplus.modules.auth.service.JwtService;
+import com.baseplus.modules.registros.security.ApiKeyAuthenticationFilter;
 import com.baseplus.modules.usuario.service.UsuarioService;
 
 @WebMvcTest(HealthController.class)
@@ -33,6 +34,9 @@ class HealthControllerTest {
     private UsuarioService usuarioService;
 
     @MockBean
+    private ApiKeyAuthenticationFilter apiKeyAuthenticationFilter;
+
+    @MockBean
     private JdbcTemplate jdbcTemplate;
 
     @Test
@@ -41,7 +45,7 @@ class HealthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.status").value("UP"))
-                .andExpect(jsonPath("$.data.service").value("baseplus-backend"))
+                .andExpect(jsonPath("$.data.service").value("canal-de-etica-registros-backend"))
                 .andExpect(jsonPath("$.data.timestamp").value(notNullValue()))
                 .andExpect(jsonPath("$.message").value("Aplicacao em execucao."))
                 .andExpect(jsonPath("$.errors").value(empty()));
@@ -55,7 +59,7 @@ class HealthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.status").value("UP"))
-                .andExpect(jsonPath("$.data.service").value("baseplus-backend"))
+                .andExpect(jsonPath("$.data.service").value("canal-de-etica-registros-backend"))
                 .andExpect(jsonPath("$.data.database").value("UP"))
                 .andExpect(jsonPath("$.data.timestamp").value(notNullValue()))
                 .andExpect(jsonPath("$.message").value("Aplicacao pronta para receber trafego."))
@@ -71,7 +75,7 @@ class HealthControllerTest {
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.data.status").value("DOWN"))
-                .andExpect(jsonPath("$.data.service").value("baseplus-backend"))
+                .andExpect(jsonPath("$.data.service").value("canal-de-etica-registros-backend"))
                 .andExpect(jsonPath("$.data.database").value("DOWN"))
                 .andExpect(jsonPath("$.data.timestamp").value(notNullValue()))
                 .andExpect(jsonPath("$.message").value("Aplicacao indisponivel para receber trafego."))

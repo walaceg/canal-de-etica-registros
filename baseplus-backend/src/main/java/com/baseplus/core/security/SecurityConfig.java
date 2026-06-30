@@ -24,6 +24,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.baseplus.modules.registros.security.ApiKeyAuthenticationFilter;
 import com.baseplus.shared.dto.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -36,17 +37,20 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final InitialPasswordChangeFilter initialPasswordChangeFilter;
+    private final ApiKeyAuthenticationFilter apiKeyAuthenticationFilter;
     private final ObjectMapper objectMapper;
     private final String corsAllowedOrigins;
 
     public SecurityConfig(
             JwtAuthenticationFilter jwtAuthenticationFilter,
             InitialPasswordChangeFilter initialPasswordChangeFilter,
+            ApiKeyAuthenticationFilter apiKeyAuthenticationFilter,
             ObjectMapper objectMapper,
             @Value("${baseplus.cors.allowed-origins}") String corsAllowedOrigins
     ) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.initialPasswordChangeFilter = initialPasswordChangeFilter;
+        this.apiKeyAuthenticationFilter = apiKeyAuthenticationFilter;
         this.objectMapper = objectMapper;
         this.corsAllowedOrigins = corsAllowedOrigins;
     }
@@ -64,8 +68,10 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/health", "/health/ready", "/h2-console/**", "/auth/login", "/auth/refresh", "/branding/public", "/uploads/**").permitAll()
+                        .requestMatchers("/api/public/v1/registros/**", "/api/public/v1/registros").authenticated()
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(apiKeyAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(initialPasswordChangeFilter, JwtAuthenticationFilter.class)
                 .build();
