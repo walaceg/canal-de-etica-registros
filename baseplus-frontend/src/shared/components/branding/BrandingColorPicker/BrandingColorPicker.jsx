@@ -4,7 +4,7 @@ import { calculateContrast, hexToRgb, normalizeHex, rgbToHex } from '../../../ut
 import './BrandingColorPicker.css';
 
 const DEFAULT_PRESETS = [
-  { label: 'Base+', value: '#2563EB' },
+  { label: 'Padrao', value: '#2563EB' },
   { label: 'Azul oceano', value: '#0EA5E9' },
   { label: 'Índigo', value: '#4F46E5' },
   { label: 'Verde', value: '#0F766E' },

@@ -796,7 +796,7 @@ export function BrandingPage() {
                         ? 'Usa o favicon dedicado enviado.'
                         : draft.logoUrl
                           ? 'Derivado da logo institucional enquanto não houver favicon dedicado.'
-                          : 'Fallback Base+ enquanto não houver asset enviado.'}
+                          : 'Fallback da aplicação enquanto não houver asset enviado.'}
                     </span>
                   </div>
                 </div>

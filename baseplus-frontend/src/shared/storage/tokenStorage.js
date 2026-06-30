@@ -1,5 +1,5 @@
-const ACCESS_TOKEN_KEY = 'baseplus.accessToken';
-const REFRESH_TOKEN_KEY = 'baseplus.refreshToken';
+const ACCESS_TOKEN_KEY = 'canal-de-etica-registros.accessToken';
+const REFRESH_TOKEN_KEY = 'canal-de-etica-registros.refreshToken';
 
 export const tokenStorage = {
   getAccessToken() {

@@ -233,7 +233,7 @@ export function AuditPage() {
       <section className="bp-list-page__header">
         <div>
           <h1>Auditoria</h1>
-          <p>Registro inicial de eventos sensiveis da Base+.</p>
+          <p>Registro inicial de eventos sensiveis da aplicação.</p>
         </div>
       </section>
 

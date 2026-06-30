@@ -289,7 +289,7 @@ export function RolesPage() {
       <section className="bp-list-page__header">
         <div>
           <h1>Perfis</h1>
-          <p>Gestao de perfis, status e permissoes da Base+.</p>
+          <p>Gestao de perfis, status e permissoes da aplicação.</p>
         </div>
         {canCreate ? <Button onClick={() => navigate('/app/roles/novo')}>Novo perfil</Button> : null}
       </section>

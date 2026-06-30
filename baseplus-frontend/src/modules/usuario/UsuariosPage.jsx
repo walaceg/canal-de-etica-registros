@@ -305,7 +305,7 @@ export function UsuariosPage() {
       <section className="bp-list-page__header">
         <div>
           <h1>Usuarios</h1>
-          <p>Gestao inicial de contas administrativas da Base+.</p>
+          <p>Gestao inicial de contas administrativas da aplicação.</p>
         </div>
         {canCreate ? <Button onClick={() => navigate('/app/usuarios/novo')}>Novo usuario</Button> : null}
       </section>

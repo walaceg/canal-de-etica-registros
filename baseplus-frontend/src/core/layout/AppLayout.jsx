@@ -5,7 +5,7 @@ import { Sidebar } from './Sidebar.jsx';
 import { Topbar } from './Topbar.jsx';
 import './layout.css';
 
-const SIDEBAR_COLLAPSED_KEY = 'baseplus.sidebar.collapsed';
+const SIDEBAR_COLLAPSED_KEY = 'canal-de-etica-registros.sidebar.collapsed';
 
 export function AppLayout() {
   const { menuPrincipal } = useTheme();

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: baseplus-backend
+    name: canal-de-etica-registros-backend
   profiles:
     default: dev
   flyway:

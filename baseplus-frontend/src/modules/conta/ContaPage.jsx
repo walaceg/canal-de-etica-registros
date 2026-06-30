@@ -369,7 +369,7 @@ export function ContaPage() {
                   </Badge>
                 </div>
               </div>
-              <p>Dados do usuário autenticado e preferências da Base+.</p>
+              <p>Dados do usuário autenticado e preferências da aplicação.</p>
               <div className="bp-account-page__meta">
                 <span>{user?.email ?? account.email ?? '-'}</span>
                 <span>{account.nome || user?.nome || 'Usuário autenticado'}</span>

@@ -54,7 +54,7 @@ public class UsuarioSeed implements ApplicationRunner {
 
         Usuario admin = usuarioService.buscarPorEmail(ADMIN_EMAIL)
                 .orElseGet(() -> new Usuario(
-                        "Administrador Base+",
+                        "Administrador",
                         ADMIN_EMAIL,
                         passwordEncoder.encode(ADMIN_PASSWORD),
                         true

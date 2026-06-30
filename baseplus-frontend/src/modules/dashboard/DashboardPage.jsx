@@ -121,7 +121,7 @@ export function DashboardPage() {
     <div className="bp-dashboard">
       <section className="bp-dashboard__hero">
         <div className="bp-dashboard__hero-main">
-          <Badge variant="primary">Base+</Badge>
+          <Badge variant="primary">Canal de Etica Registros</Badge>
           <h1>Dashboard</h1>
           <p>Visao inicial da operacao administrativa com dados reais quando disponiveis.</p>
         </div>

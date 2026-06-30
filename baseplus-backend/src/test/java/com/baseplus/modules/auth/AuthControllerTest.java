@@ -372,7 +372,7 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.id").value(notNullValue()))
-                .andExpect(jsonPath("$.data.nome").value("Administrador Base+"))
+                .andExpect(jsonPath("$.data.nome").value("Administrador"))
                 .andExpect(jsonPath("$.data.email").value("admin@baseplus.com"))
                 .andExpect(jsonPath("$.data.senha").doesNotExist())
                 .andExpect(jsonPath("$.message").value("Usuario autenticado."))

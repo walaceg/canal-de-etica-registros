@@ -265,7 +265,7 @@ export function PermissionsPage() {
       <section className="bp-list-page__header">
         <div>
           <h1>Permissoes</h1>
-          <p>Gestao de permissoes da Base+.</p>
+          <p>Gestao de permissoes da aplicação.</p>
         </div>
         {canCreate ? <Button onClick={openCreate}>Nova permissao</Button> : null}
       </section>

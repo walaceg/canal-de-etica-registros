@@ -4,7 +4,7 @@ import { hexToRgb as parseHexToRgb, normalizeHex, rgbToHex as formatRgbToHex } f
 let faviconUpdateSequence = 0;
 
 export const defaultBranding = {
-  nomePlataforma: 'Base+',
+  nomePlataforma: 'Canal de Etica Registros',
   subtituloInstitucional: 'Painel administrativo',
   tema: 'light',
   corPrimaria: '#2563eb',
@@ -23,8 +23,8 @@ export const defaultBranding = {
 
 export const brandingPresets = [
   {
-    id: 'classico-baseplus',
-    name: 'Clássico Base+',
+    id: 'padrao',
+    name: 'Padrao',
     tema: 'light',
     corPrimaria: '#2563eb',
     corSecundaria: '#0f172a',
@@ -215,7 +215,7 @@ export function normalizeCompactLogoUrl(value) {
 export function getBrandingInitials(name = '') {
   const normalized = typeof name === 'string' ? name.trim() : '';
   if (!normalized) {
-    return 'B+';
+    return 'CE';
   }
 
   const parts = normalized

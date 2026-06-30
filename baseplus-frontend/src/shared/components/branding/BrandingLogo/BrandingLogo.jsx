@@ -6,7 +6,7 @@ export function BrandingLogo({
   className = '',
   logoUrl,
   assetVersion = 0,
-  name = 'Base+',
+  name = 'Canal de Etica Registros',
   subtitle = '',
   showText = true,
   showSubtitle = true,

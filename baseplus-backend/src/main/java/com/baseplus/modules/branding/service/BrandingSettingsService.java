@@ -21,8 +21,8 @@ import com.baseplus.modules.branding.repository.BrandingSettingsRepository;
 @Service
 public class BrandingSettingsService {
 
-    private static final String DEFAULT_NOME = "Base+";
-    private static final String DEFAULT_SUBTITULO = "Plataforma Base+";
+    private static final String DEFAULT_NOME = "Canal de Etica Registros";
+    private static final String DEFAULT_SUBTITULO = "Painel administrativo";
     private static final String DEFAULT_TEMA = "light";
     private static final String DEFAULT_COR_PRIMARIA = "#2563eb";
     private static final String DEFAULT_COR_SECUNDARIA = "#1e40af";

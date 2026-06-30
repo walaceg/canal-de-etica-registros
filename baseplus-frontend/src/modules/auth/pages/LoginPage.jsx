@@ -14,7 +14,7 @@ export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTo = location.state?.from?.pathname ?? '/app';
-  const platformName = branding.nomePlataforma || 'Base+';
+  const platformName = branding.nomePlataforma || 'Canal de Etica Registros';
   const platformSubtitle = branding.subtituloInstitucional || 'Painel administrativo';
   const loginName = branding.whiteLabelEnabled && branding.whiteLabelName ? branding.whiteLabelName : platformName;
   const loginSubtitle = branding.whiteLabelEnabled && branding.whiteLabelSubtitle

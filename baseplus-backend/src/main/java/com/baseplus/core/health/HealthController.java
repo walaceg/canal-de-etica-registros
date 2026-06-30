@@ -27,7 +27,7 @@ public class HealthController {
     public ResponseEntity<ApiResponse<Map<String, Object>>> health() {
         Map<String, Object> data = Map.of(
                 "status", "UP",
-                "service", "baseplus-backend",
+                "service", "canal-de-etica-registros-backend",
                 "timestamp", OffsetDateTime.now()
         );
 
@@ -45,7 +45,7 @@ public class HealthController {
 
             Map<String, Object> data = Map.of(
                     "status", "UP",
-                    "service", "baseplus-backend",
+                    "service", "canal-de-etica-registros-backend",
                     "database", "UP",
                     "timestamp", OffsetDateTime.now()
             );
@@ -81,7 +81,7 @@ public class HealthController {
     private ResponseEntity<ApiResponse<Map<String, Object>>> databaseUnavailableResponse() {
         Map<String, Object> data = Map.of(
                 "status", "DOWN",
-                "service", "baseplus-backend",
+                "service", "canal-de-etica-registros-backend",
                 "database", "DOWN",
                 "timestamp", OffsetDateTime.now()
         );

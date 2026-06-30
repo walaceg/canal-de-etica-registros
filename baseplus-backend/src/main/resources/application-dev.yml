@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:baseplus_dev;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:mem:canal_de_etica_registros_dev;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -22,4 +22,4 @@ spring:
       mode: never
 
 jwt:
-  secret: ${JWT_SECRET:baseplus-dev-secret-change-before-production-2026}
+  secret: ${JWT_SECRET:canal-de-etica-registros-dev-secret-change-before-production-2026}

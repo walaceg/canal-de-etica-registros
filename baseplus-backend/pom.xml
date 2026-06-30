@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>com.baseplus</groupId>
-    <artifactId>baseplus-backend</artifactId>
+    <artifactId>canal-de-etica-registros-backend</artifactId>
     <version>1.0.2</version>
-    <name>baseplus-backend</name>
-    <description>Backend Base+</description>
+    <name>canal-de-etica-registros-backend</name>
+    <description>Backend Canal de Etica Registros</description>
 
     <properties>
         <java.version>17</java.version>

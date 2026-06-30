@@ -74,7 +74,7 @@ class ContaControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.id").value(notNullValue()))
-                .andExpect(jsonPath("$.data.nome").value("Administrador Base+"))
+                .andExpect(jsonPath("$.data.nome").value("Administrador"))
                 .andExpect(jsonPath("$.data.email").value("admin@baseplus.com"))
                 .andExpect(jsonPath("$.data.avatarUrl").value(startsWith("/uploads/avatars/")))
                 .andExpect(jsonPath("$.data.avatarUrl").value("/uploads/avatars/avatar-conta.png"))
@@ -126,7 +126,7 @@ class ContaControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "nome": "Administrador Base+",
+                                  "nome": "Administrador",
                                   "email": "duplicado@baseplus.com"
                                 }
                                 """))

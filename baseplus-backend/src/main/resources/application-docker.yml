@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:baseplus}
-    username: ${DB_USER:baseplus}
-    password: ${DB_PASSWORD:baseplus}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:canal_de_etica_registros}
+    username: ${DB_USER:canal_de_etica}
+    password: ${DB_PASSWORD:canal_de_etica}
     driver-class-name: org.postgresql.Driver
   flyway:
     enabled: true

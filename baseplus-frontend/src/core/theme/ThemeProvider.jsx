@@ -11,11 +11,11 @@ import {
 
 const defaultTheme = {
   mode: 'light',
-  name: 'baseplus',
+  name: 'canal-de-etica-registros',
 };
 
 const defaultMenuPrincipal = 'sidebar';
-const menuPrincipalStorageKey = 'baseplus.menuPrincipal';
+const menuPrincipalStorageKey = 'canal-de-etica-registros.menuPrincipal';
 const legacyMenuPrincipalStorageKey = 'baseplus.navigation.mode';
 
 export function ThemeProvider({ children }) {
