@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.baseplus.core.exception.BusinessException;
+import com.baseplus.core.storage.FileStorageService;
 import com.baseplus.modules.registros.domain.OrigemRegistro;
 import com.baseplus.modules.registros.domain.Registro;
 import com.baseplus.modules.registros.domain.RegistroAnexo;
@@ -35,13 +37,16 @@ public class RegistroConsultaService {
 
     private final RegistroRepository registroRepository;
     private final RegistroAnexoRepository registroAnexoRepository;
+    private final FileStorageService fileStorageService;
 
     public RegistroConsultaService(
             RegistroRepository registroRepository,
-            RegistroAnexoRepository registroAnexoRepository
+            RegistroAnexoRepository registroAnexoRepository,
+            FileStorageService fileStorageService
     ) {
         this.registroRepository = registroRepository;
         this.registroAnexoRepository = registroAnexoRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     @Transactional(readOnly = true)
@@ -77,6 +82,19 @@ public class RegistroConsultaService {
                 .map(this::toAnexoResponse)
                 .toList();
         return toDetalheResponse(registro, anexos);
+    }
+
+    @Transactional(readOnly = true)
+    public RegistroAnexoArquivo buscarArquivoAnexo(UUID registroId, UUID anexoId) {
+        RegistroAnexo anexo = registroAnexoRepository.findByIdAndRegistro_Id(anexoId, registroId)
+                .orElseThrow(this::anexoNaoEncontrado);
+        Resource resource = fileStorageService.loadByUrl(anexo.getCaminho());
+        return new RegistroAnexoArquivo(
+                resource,
+                anexo.getNomeOriginal(),
+                anexo.getContentType(),
+                anexo.getTamanho()
+        );
     }
 
     private Pageable resolvePageable(Pageable pageable) {
@@ -170,5 +188,17 @@ public class RegistroConsultaService {
                 anexo.getTamanho(),
                 anexo.getCriadoEm()
         );
+    }
+
+    private BusinessException anexoNaoEncontrado() {
+        return new BusinessException("Anexo nao encontrado.", HttpStatus.NOT_FOUND, List.of("Anexo nao encontrado."));
+    }
+
+    public record RegistroAnexoArquivo(
+            Resource resource,
+            String nomeOriginal,
+            String contentType,
+            Long tamanho
+    ) {
     }
 }

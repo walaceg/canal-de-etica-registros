@@ -1,12 +1,16 @@
 package com.baseplus.modules.registros.controller;
 
 import java.time.LocalDateTime;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +25,7 @@ import com.baseplus.modules.registros.domain.StatusRegistro;
 import com.baseplus.modules.registros.dto.RegistroDetalheResponse;
 import com.baseplus.modules.registros.dto.RegistroResumoResponse;
 import com.baseplus.modules.registros.service.RegistroConsultaService;
+import com.baseplus.modules.registros.service.RegistroConsultaService.RegistroAnexoArquivo;
 import com.baseplus.shared.dto.ApiResponse;
 import com.baseplus.shared.dto.PageResponse;
 
@@ -155,5 +160,24 @@ public class RegistroController {
     public ResponseEntity<ApiResponse<RegistroDetalheResponse>> buscar(@PathVariable UUID id) {
         RegistroDetalheResponse response = registroConsultaService.buscar(id);
         return ResponseEntity.ok(ApiResponse.success(response, "Registro carregado."));
+    }
+
+    @GetMapping("/{registroId}/anexos/{anexoId}")
+    @PreAuthorize("@authorizationService.hasPermission('REGISTROS_DETAIL')")
+    public ResponseEntity<Resource> visualizarAnexo(
+            @PathVariable UUID registroId,
+            @PathVariable UUID anexoId
+    ) {
+        RegistroAnexoArquivo arquivo = registroConsultaService.buscarArquivoAnexo(registroId, anexoId);
+        MediaType mediaType = MediaType.parseMediaType(arquivo.contentType());
+        ContentDisposition contentDisposition = ContentDisposition.inline()
+                .filename(arquivo.nomeOriginal(), StandardCharsets.UTF_8)
+                .build();
+
+        return ResponseEntity.ok()
+                .contentType(mediaType)
+                .contentLength(arquivo.tamanho())
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
+                .body(arquivo.resource());
     }
 }

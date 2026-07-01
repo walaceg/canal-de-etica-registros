@@ -1,21 +1,32 @@
 package com.baseplus.modules.registros;
 
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.not;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,10 +60,20 @@ class RegistroControllerTest {
     @Autowired
     private TipoFatoRepository tipoFatoRepository;
 
+    private final List<Path> createdAnexoFiles = new ArrayList<>();
+
     @BeforeEach
     void setUp() {
         registroAnexoRepository.deleteAll();
         registroRepository.deleteAll();
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        for (Path file : createdAnexoFiles) {
+            Files.deleteIfExists(file);
+        }
+        createdAnexoFiles.clear();
     }
 
     @Test
@@ -205,6 +226,60 @@ class RegistroControllerTest {
                 .andExpect(jsonPath("$.data.anexos[0].caminhoFisico").doesNotExist());
     }
 
+    @Test
+    void shouldDownloadRegistroAnexoForAuthenticatedUser() throws Exception {
+        String token = loginAndGetToken();
+        Registro registro = criarRegistro("CE-DOWNLOAD-001", criarTipoFato("Conduta Download"));
+        RegistroAnexo anexo = criarAnexo(registro, "evidencia-download.pdf");
+
+        mockMvc.perform(get("/api/registros/{registroId}/anexos/{anexoId}", registro.getId(), anexo.getId())
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/pdf"))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, containsString("evidencia-download.pdf")))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, not(containsString("hash-interno"))))
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, not(containsString(anexo.getCaminho()))))
+                .andExpect(header().longValue(HttpHeaders.CONTENT_LENGTH, 512L));
+    }
+
+    @Test
+    void shouldBlockRegistroAnexoDownloadWithoutToken() throws Exception {
+        Registro registro = criarRegistro("CE-DOWNLOAD-SEM-TOKEN", criarTipoFato("Conduta Sem Token"));
+        RegistroAnexo anexo = criarAnexo(registro, "evidencia-sem-token.pdf");
+
+        mockMvc.perform(get("/api/registros/{registroId}/anexos/{anexoId}", registro.getId(), anexo.getId()))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Acesso nao autorizado."));
+    }
+
+    @Test
+    void shouldReturnNotFoundForNonexistentRegistroAnexo() throws Exception {
+        String token = loginAndGetToken();
+        Registro registro = criarRegistro("CE-DOWNLOAD-INEXISTENTE", criarTipoFato("Conduta Inexistente"));
+
+        mockMvc.perform(get("/api/registros/{registroId}/anexos/{anexoId}", registro.getId(), UUID.randomUUID())
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Anexo nao encontrado."));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenAnexoBelongsToAnotherRegistro() throws Exception {
+        String token = loginAndGetToken();
+        TipoFato tipoFato = criarTipoFato("Conduta Outro Registro");
+        Registro registro = criarRegistro("CE-DOWNLOAD-REGISTRO-A", tipoFato);
+        Registro outroRegistro = criarRegistro("CE-DOWNLOAD-REGISTRO-B", tipoFato);
+        RegistroAnexo anexo = criarAnexo(outroRegistro, "evidencia-outro-registro.pdf");
+
+        mockMvc.perform(get("/api/registros/{registroId}/anexos/{anexoId}", registro.getId(), anexo.getId())
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Anexo nao encontrado."));
+    }
+
     private TipoFato criarTipoFato(String nome) {
         return tipoFatoRepository.saveAndFlush(new TipoFato(nome, true, 999));
     }
@@ -222,15 +297,22 @@ class RegistroControllerTest {
         return registroRepository.saveAndFlush(registro);
     }
 
-    private RegistroAnexo criarAnexo(Registro registro, String nomeOriginal) {
+    private RegistroAnexo criarAnexo(Registro registro, String nomeOriginal) throws IOException {
+        String nomeFisico = UUID.randomUUID() + ".pdf";
+        Path directory = Path.of("uploads", "registros", "anexos").toAbsolutePath().normalize();
+        Files.createDirectories(directory);
+        Path file = directory.resolve(nomeFisico).normalize();
+        Files.write(file, new byte[512]);
+        createdAnexoFiles.add(file);
+
         return registroAnexoRepository.saveAndFlush(new RegistroAnexo(
                 registro,
                 nomeOriginal,
-                UUID.randomUUID() + ".pdf",
+                nomeFisico,
                 "application/pdf",
                 512L,
                 "hash-interno-nao-exposto",
-                "registros/" + nomeOriginal
+                "/uploads/registros/anexos/" + nomeFisico
         ));
     }
 

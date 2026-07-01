@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.UUID;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,6 +52,26 @@ public class LocalFileStorageService implements FileStorageService {
     }
 
     @Override
+    public Resource loadByUrl(String url) {
+        if (url == null || !url.startsWith("/uploads/")) {
+            throw fileNotFound();
+        }
+
+        Path file = rootDirectory.resolve(url.substring("/uploads/".length())).normalize();
+        ensureWithinRoot(file);
+
+        try {
+            Resource resource = new UrlResource(file.toUri());
+            if (!resource.exists() || !resource.isReadable() || Files.isDirectory(file)) {
+                throw fileNotFound();
+            }
+            return resource;
+        } catch (IOException exception) {
+            throw fileNotFound();
+        }
+    }
+
+    @Override
     public void deleteByUrl(String url) {
         if (url == null || !url.startsWith("/uploads/")) {
             return;
@@ -63,6 +85,10 @@ public class LocalFileStorageService implements FileStorageService {
         } catch (IOException exception) {
             throw new BusinessException("Nao foi possivel remover arquivo.", HttpStatus.INTERNAL_SERVER_ERROR, java.util.List.of("Falha ao remover arquivo local."));
         }
+    }
+
+    private BusinessException fileNotFound() {
+        return new BusinessException("Anexo nao encontrado.", HttpStatus.NOT_FOUND, java.util.List.of("Anexo nao encontrado."));
     }
 
     private String buildUrl(String subdirectory, String filename) {
