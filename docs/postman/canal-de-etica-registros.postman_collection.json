@@ -1,0 +1,149 @@
+{
+  "info": {
+    "name": "Canal de Etica Registros - API Publica",
+    "description": "Colecao oficial para homologacao da API publica de recebimento de registros. Use o environment canal-de-etica-registros.postman_environment.json e informe uma API Key valida apenas localmente no Postman.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-API-Key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "POST Criar registro com anexos",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "protocolo",
+              "value": "CE-2026-000001",
+              "type": "text"
+            },
+            {
+              "key": "tipoFatoId",
+              "value": "1",
+              "type": "text"
+            },
+            {
+              "key": "relato",
+              "value": "Relato recebido pela API publica.",
+              "type": "text"
+            },
+            {
+              "key": "nome",
+              "value": "Pessoa Relatora",
+              "type": "text"
+            },
+            {
+              "key": "email",
+              "value": "relatora@example.com",
+              "type": "text"
+            },
+            {
+              "key": "telefone",
+              "value": "+55 11 99999-9999",
+              "type": "text"
+            },
+            {
+              "key": "anexos[]",
+              "type": "file",
+              "src": []
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/public/v1/registros",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "public",
+            "v1",
+            "registros"
+          ]
+        },
+        "description": "Cria um registro publico com anexo opcional. Selecione um arquivo PNG, JPG ou ICO no campo anexos[]."
+      },
+      "response": []
+    },
+    {
+      "name": "POST Criar registro sem anexos",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "protocolo",
+              "value": "CE-2026-000002",
+              "type": "text"
+            },
+            {
+              "key": "tipoFatoId",
+              "value": "1",
+              "type": "text"
+            },
+            {
+              "key": "relato",
+              "value": "Relato sem anexos recebido pela API publica.",
+              "type": "text"
+            },
+            {
+              "key": "nome",
+              "value": "",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "email",
+              "value": "",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "telefone",
+              "value": "",
+              "type": "text",
+              "disabled": true
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/public/v1/registros",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "public",
+            "v1",
+            "registros"
+          ]
+        },
+        "description": "Cria um registro publico usando apenas os campos obrigatorios."
+      },
+      "response": []
+    }
+  ]
+}

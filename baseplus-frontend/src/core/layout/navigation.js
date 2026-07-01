@@ -1,5 +1,6 @@
 import {
   Building2,
+  ClipboardList,
   GitBranch,
   History,
   LayoutDashboard,
@@ -30,6 +31,13 @@ export const navigationGroups = [
       { icon: Users, label: 'Usuarios', permission: PERMISSIONS.USERS_VIEW, to: '/app/usuarios' },
       { icon: Shield, label: 'Perfis', permission: PERMISSIONS.ROLES_VIEW, to: '/app/roles' },
       { icon: ShieldCheck, label: 'Permissoes', permission: PERMISSIONS.PERMISSIONS_VIEW, to: '/app/permissions' },
+    ],
+  },
+  {
+    title: 'Canal de Ética',
+    icon: ClipboardList,
+    items: [
+      { icon: ClipboardList, label: 'Registros', permission: PERMISSIONS.REGISTROS_VIEW, to: '/app/registros' },
     ],
   },
   {

@@ -8,6 +8,8 @@ import { BrandingPage } from '../modules/branding/BrandingPage.jsx';
 import { AuditPage } from '../modules/audit/AuditPage.jsx';
 import { ContaPage } from '../modules/conta/ContaPage.jsx';
 import { OrganizationPage } from '../modules/organization/OrganizationPage.jsx';
+import { RegistroDetalhePage } from '../modules/registros/pages/RegistroDetalhePage.jsx';
+import { RegistrosPage } from '../modules/registros/pages/RegistrosPage.jsx';
 import { PermissionsPage } from '../modules/auth/permissions/PermissionsPage.jsx';
 import { RoleFormPage } from '../modules/auth/roles/RoleFormPage.jsx';
 import { RolesPage } from '../modules/auth/roles/RolesPage.jsx';
@@ -49,6 +51,8 @@ export function App() {
         <Route path="roles/:id/editar" element={<ProtectedRoute permissions={[PERMISSIONS.ROLES_EDIT, PERMISSIONS.ROLES_MANAGE_PERMISSIONS, PERMISSIONS.ROLES_MANAGE_USERS, PERMISSIONS.ROLES_MANAGE_ORGANIZATION_SCOPES]}><RoleFormPage mode="edit" /></ProtectedRoute>} />
         <Route path="permissions" element={<ProtectedRoute permissions={[PERMISSIONS.PERMISSIONS_VIEW]}><PermissionsPage /></ProtectedRoute>} />
         <Route path="organizacao" element={<ProtectedRoute permissions={[PERMISSIONS.ORGANIZATION_UNITS_VIEW, PERMISSIONS.ROLES_VIEW]}><OrganizationPage /></ProtectedRoute>} />
+        <Route path="registros" element={<ProtectedRoute permissions={[PERMISSIONS.REGISTROS_VIEW]}><RegistrosPage /></ProtectedRoute>} />
+        <Route path="registros/:id" element={<ProtectedRoute permissions={[PERMISSIONS.REGISTROS_DETAIL]}><RegistroDetalhePage /></ProtectedRoute>} />
       </Route>
     </Routes>
   );

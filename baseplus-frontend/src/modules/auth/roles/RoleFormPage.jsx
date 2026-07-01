@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ActionIconButton, Alert, Badge, Button, Card, ConfirmDialog, EmptyState, Input, Loading, Select } from '../../../shared/components/index.js';
 import { Trash2, UserPlus } from 'lucide-react';
 import { useAuthorization } from '../../../core/auth/useAuthorization.js';
-import { PERMISSIONS } from '../../../shared/auth/permissions.js';
+import { getPermissionDisplayDescription, getPermissionDisplayGroup, PERMISSIONS } from '../../../shared/auth/permissions.js';
 import { useDebouncedValue } from '../../../shared/hooks/useDebouncedValue.js';
 import * as roleService from './roleService.js';
 import './roles.css';
@@ -51,11 +51,7 @@ function toForm(role) {
 }
 
 function getPermissionModule(permissionName) {
-  if (!permissionName) {
-    return 'GERAL';
-  }
-
-  return permissionName.split('_')[0] || 'GERAL';
+  return getPermissionDisplayGroup(permissionName);
 }
 
 export function RoleFormPage({ mode = 'create' }) {
@@ -202,7 +198,7 @@ export function RoleFormPage({ mode = 'create' }) {
     const visiblePermissions = term
       ? permissions.filter((permission) => {
           const name = permission.name?.toLowerCase() ?? '';
-          const description = permission.description?.toLowerCase() ?? '';
+          const description = getPermissionDisplayDescription(permission).toLowerCase();
           return name.includes(term) || description.includes(term);
         })
       : permissions;
@@ -519,7 +515,7 @@ export function RoleFormPage({ mode = 'create' }) {
                                 />
                                 <span>
                                   <strong>{permission.name}</strong>
-                                  <small>{permission.description || 'Sem descricao'}</small>
+                                  <small>{getPermissionDisplayDescription(permission) || 'Sem descricao'}</small>
                                 </span>
                               </label>
                             ))}

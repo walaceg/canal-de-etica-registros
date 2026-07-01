@@ -1,0 +1,55 @@
+.bp-registros-help,
+.bp-registros-feedback {
+  margin: 0 0 var(--space-3);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.bp-registros-feedback {
+  margin: var(--space-3) 0 0;
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.bp-registros-active-filters,
+.bp-registros-result-summary,
+.bp-registros-error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.bp-registros-advanced-panel {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.bp-registros-advanced-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bp-registros-active-filters {
+  margin-top: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.bp-registros-active-filters > span,
+.bp-registros-result-summary strong {
+  color: var(--color-text);
+}
+
+.bp-registros-result-summary {
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.bp-registros-error {
+  justify-content: space-between;
+}

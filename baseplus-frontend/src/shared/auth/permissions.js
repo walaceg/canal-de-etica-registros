@@ -25,9 +25,34 @@ export const PERMISSIONS = {
   ORGANIZATION_UNITS_CREATE: 'ORGANIZATION_UNITS_CREATE',
   ORGANIZATION_UNITS_EDIT: 'ORGANIZATION_UNITS_EDIT',
   ORGANIZATION_UNITS_DELETE: 'ORGANIZATION_UNITS_DELETE',
+  REGISTROS_VIEW: 'REGISTROS_VIEW',
+  REGISTROS_DETAIL: 'REGISTROS_DETAIL',
   AUDIT_VIEW: 'AUDIT_VIEW',
   AUDIT_EXPORT: 'AUDIT_EXPORT',
 };
+
+const PERMISSION_DISPLAY = {
+  REGISTROS_VIEW: {
+    description: 'Permite visualizar a lista de registros do Canal de Ética.',
+    group: 'Registros do Canal de Ética',
+  },
+  REGISTROS_DETAIL: {
+    description: 'Permite visualizar os detalhes e anexos de um registro do Canal de Ética.',
+    group: 'Registros do Canal de Ética',
+  },
+};
+
+export function getPermissionDisplayDescription(permission) {
+  return PERMISSION_DISPLAY[permission?.name]?.description ?? permission?.description ?? '';
+}
+
+export function getPermissionDisplayGroup(permissionName) {
+  if (!permissionName) {
+    return 'GERAL';
+  }
+
+  return PERMISSION_DISPLAY[permissionName]?.group ?? permissionName.split('_')[0] ?? 'GERAL';
+}
 
 export function getAuthRoles({ user, accessToken } = {}) {
   if (Array.isArray(user?.roles)) {

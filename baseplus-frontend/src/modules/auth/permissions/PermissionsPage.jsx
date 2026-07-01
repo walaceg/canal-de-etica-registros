@@ -16,7 +16,7 @@ import {
 } from '../../../shared/components/index.js';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useAuthorization } from '../../../core/auth/useAuthorization.js';
-import { PERMISSIONS } from '../../../shared/auth/permissions.js';
+import { getPermissionDisplayDescription, getPermissionDisplayGroup, PERMISSIONS } from '../../../shared/auth/permissions.js';
 import { useDebouncedValue } from '../../../shared/hooks/useDebouncedValue.js';
 import * as permissionService from './permissionService.js';
 import { PermissionFormModal } from './PermissionFormModal.jsx';
@@ -232,7 +232,8 @@ export function PermissionsPage() {
           <Avatar alt={row.name} name={row.name} size="sm" />
           <div>
             <strong>{row.name}</strong>
-            <span>{row.description || 'Sem descricao'}</span>
+            <span>{getPermissionDisplayDescription(row) || 'Sem descricao'}</span>
+            <Badge variant="secondary">{getPermissionDisplayGroup(row.name)}</Badge>
           </div>
         </div>
       ),
