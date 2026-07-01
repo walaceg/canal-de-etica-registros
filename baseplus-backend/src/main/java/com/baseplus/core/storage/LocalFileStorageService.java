@@ -36,12 +36,22 @@ public class LocalFileStorageService implements FileStorageService {
 
         String contentType = normalizeContentType(file.getContentType());
         String extension = resolveValidatedExtension(file, contentType);
+        return save(file, subdirectory, extension);
+    }
+
+    @Override
+    public StoredFile save(MultipartFile file, String subdirectory, String extension) {
+        if (file == null || file.isEmpty()) {
+            throw new BusinessException("Arquivo invalido.", HttpStatus.BAD_REQUEST, java.util.List.of("O arquivo e obrigatorio."));
+        }
+
+        String normalizedExtension = normalizeExtension(extension);
         Path directory = rootDirectory.resolve(normalizeSubdirectory(subdirectory)).normalize();
         ensureWithinRoot(directory);
 
         try {
             Files.createDirectories(directory);
-            String filename = UUID.randomUUID() + extension;
+            String filename = UUID.randomUUID() + normalizedExtension;
             Path destination = directory.resolve(filename).normalize();
             ensureWithinRoot(destination);
             file.transferTo(destination);
@@ -101,6 +111,14 @@ public class LocalFileStorageService implements FileStorageService {
 
     private String normalizeContentType(String contentType) {
         return contentType == null ? "" : contentType.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private String normalizeExtension(String extension) {
+        String normalized = extension == null ? "" : extension.trim().toLowerCase(Locale.ROOT);
+        if (!normalized.matches("\\.[a-z0-9]+")) {
+            throw new BusinessException("Arquivo invalido.", HttpStatus.BAD_REQUEST, java.util.List.of("Extensao de arquivo invalida."));
+        }
+        return normalized;
     }
 
     private String resolveValidatedExtension(MultipartFile file, String contentType) {

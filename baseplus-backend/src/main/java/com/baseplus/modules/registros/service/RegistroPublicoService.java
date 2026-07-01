@@ -6,7 +6,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
-import java.util.Locale;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -25,6 +24,7 @@ import com.baseplus.modules.registros.dto.CriarRegistroResponse;
 import com.baseplus.modules.registros.repository.RegistroAnexoRepository;
 import com.baseplus.modules.registros.repository.RegistroRepository;
 import com.baseplus.modules.registros.repository.TipoFatoRepository;
+import com.baseplus.modules.registros.service.RegistroAnexoValidator.ValidatedAnexo;
 
 @Service
 public class RegistroPublicoService {
@@ -33,9 +33,6 @@ public class RegistroPublicoService {
     private static final int NOME_MAX_LENGTH = 160;
     private static final int EMAIL_MAX_LENGTH = 160;
     private static final int TELEFONE_MAX_LENGTH = 40;
-    private static final int ANEXO_NOME_MAX_LENGTH = 255;
-    private static final int ANEXO_CONTENT_TYPE_MAX_LENGTH = 120;
-    private static final long MAX_ANEXO_SIZE_BYTES = 10L * 1024L * 1024L;
     private static final String ANEXO_UPLOAD_DIR = "registros/anexos";
     private static final String EMAIL_PATTERN = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
 
@@ -43,17 +40,20 @@ public class RegistroPublicoService {
     private final TipoFatoRepository tipoFatoRepository;
     private final RegistroAnexoRepository registroAnexoRepository;
     private final FileStorageService fileStorageService;
+    private final RegistroAnexoValidator registroAnexoValidator;
 
     public RegistroPublicoService(
             RegistroRepository registroRepository,
             TipoFatoRepository tipoFatoRepository,
             RegistroAnexoRepository registroAnexoRepository,
-            FileStorageService fileStorageService
+            FileStorageService fileStorageService,
+            RegistroAnexoValidator registroAnexoValidator
     ) {
         this.registroRepository = registroRepository;
         this.tipoFatoRepository = tipoFatoRepository;
         this.registroAnexoRepository = registroAnexoRepository;
         this.fileStorageService = fileStorageService;
+        this.registroAnexoValidator = registroAnexoValidator;
     }
 
     @Transactional
@@ -139,8 +139,7 @@ public class RegistroPublicoService {
         String telefone = optionalTrimmed(request.getTelefone());
         validateMaxLength(telefone, TELEFONE_MAX_LENGTH, "Telefone deve ter no maximo 40 caracteres.", errors);
 
-        MultipartFile[] anexos = normalizeAnexos(request.getAnexos());
-        validateAnexos(anexos, errors);
+        List<ValidatedAnexo> anexos = registroAnexoValidator.validate(request.getAnexos(), errors);
 
         if (!errors.isEmpty()) {
             throw dadosInvalidos(errors);
@@ -149,20 +148,20 @@ public class RegistroPublicoService {
         return new ValidatedRegistroInput(protocolo, tipoFatoId, relato, nome, email, telefone, anexos);
     }
 
-    private int salvarAnexos(Registro registro, MultipartFile[] anexos, List<String> uploadedUrls) {
+    private int salvarAnexos(Registro registro, List<ValidatedAnexo> anexos, List<String> uploadedUrls) {
         int quantidadeAnexos = 0;
-        for (MultipartFile anexo : anexos) {
-            byte[] content = readBytes(anexo);
+        for (ValidatedAnexo anexo : anexos) {
+            byte[] content = readBytes(anexo.file());
             String hash = sha256(content);
-            StoredFile storedFile = fileStorageService.saveImage(anexo, ANEXO_UPLOAD_DIR, MAX_ANEXO_SIZE_BYTES);
+            StoredFile storedFile = fileStorageService.save(anexo.file(), ANEXO_UPLOAD_DIR, anexo.extension());
             String caminho = storedFile.url();
             uploadedUrls.add(caminho);
             RegistroAnexo registroAnexo = new RegistroAnexo(
                     registro,
-                    normalizeOriginalFilename(anexo.getOriginalFilename()),
+                    anexo.nomeOriginal(),
                     extractFilename(caminho),
-                    normalizeContentType(anexo.getContentType()),
-                    anexo.getSize(),
+                    anexo.contentType(),
+                    anexo.file().getSize(),
                     hash,
                     caminho
             );
@@ -180,36 +179,6 @@ public class RegistroPublicoService {
                 // Preserva o erro original da criacao do registro.
             }
         }
-    }
-
-    private void validateAnexos(MultipartFile[] anexos, List<String> errors) {
-        for (MultipartFile anexo : anexos) {
-            if (anexo == null || anexo.isEmpty()) {
-                errors.add("Anexo invalido.");
-                continue;
-            }
-
-            String nomeOriginal = normalizeOriginalFilename(anexo.getOriginalFilename());
-            if (nomeOriginal.length() > ANEXO_NOME_MAX_LENGTH) {
-                errors.add("Nome original do anexo deve ter no maximo 255 caracteres.");
-            }
-
-            String contentType = normalizeContentType(anexo.getContentType());
-            if (contentType.isBlank() || contentType.length() > ANEXO_CONTENT_TYPE_MAX_LENGTH) {
-                errors.add("Tipo de conteudo do anexo e invalido.");
-            }
-
-            if (anexo.getSize() > MAX_ANEXO_SIZE_BYTES) {
-                errors.add("Anexo excede o tamanho maximo permitido.");
-            }
-        }
-    }
-
-    private MultipartFile[] normalizeAnexos(MultipartFile[] anexos) {
-        if (anexos == null || anexos.length == 0) {
-            return new MultipartFile[0];
-        }
-        return anexos;
     }
 
     private String requiredTrimmed(String value, String error, List<String> errors) {
@@ -245,17 +214,6 @@ public class RegistroPublicoService {
         );
     }
 
-    private String normalizeOriginalFilename(String filename) {
-        if (filename == null || filename.isBlank()) {
-            return "anexo";
-        }
-        return filename.trim();
-    }
-
-    private String normalizeContentType(String contentType) {
-        return contentType == null ? "" : contentType.trim().toLowerCase(Locale.ROOT);
-    }
-
     private String extractFilename(String caminho) {
         int index = caminho == null ? -1 : caminho.lastIndexOf('/');
         if (index < 0 || index == caminho.length() - 1) {
@@ -288,7 +246,7 @@ public class RegistroPublicoService {
             String nome,
             String email,
             String telefone,
-            MultipartFile[] anexos
+            List<ValidatedAnexo> anexos
     ) {
     }
 }

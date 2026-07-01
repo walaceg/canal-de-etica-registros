@@ -201,26 +201,71 @@ class RegistroPublicoControllerTest {
     }
 
     @Test
+    void shouldCreateRegistroWithCorporateAttachmentTypes() throws Exception {
+        saveApiClient(VALID_API_KEY, true);
+        TipoFato tipoFato = saveTipoFato("Anexos corporativos", true);
+
+        mockMvc.perform(validRequest("CE-2026-000009", tipoFato.getId())
+                        .file(pdf("anexos[]", "documento.pdf"))
+                        .file(png("anexos[]", "imagem.png"))
+                        .file(mp4("anexos[]", "video.mp4"))
+                        .file(mp3("anexos[]", "audio.mp3"))
+                        .header(HEADER_NAME, VALID_API_KEY))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.quantidadeAnexos").value(4));
+
+        Registro registro = registroRepository.findByProtocolo("CE-2026-000009").orElseThrow();
+        assertThat(registroAnexoRepository.findByRegistro_IdOrderByCriadoEmAsc(registro.getId()))
+                .extracting(anexo -> anexo.getContentType())
+                .containsExactly("application/pdf", "image/png", "video/mp4", "audio/mpeg");
+    }
+
+    @Test
+    void shouldCreateRegistroWithValidSixteenMbVideo() throws Exception {
+        saveApiClient(VALID_API_KEY, true);
+        TipoFato tipoFato = saveTipoFato("Video valido", true);
+
+        mockMvc.perform(validRequest("CE-2026-000010", tipoFato.getId())
+                        .file(mp4("anexos[]", "evidencia-video.mp4", 16 * 1024 * 1024))
+                        .header(HEADER_NAME, VALID_API_KEY))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.quantidadeAnexos").value(1));
+
+        Registro registro = registroRepository.findByProtocolo("CE-2026-000010").orElseThrow();
+        var anexos = registroAnexoRepository.findByRegistro_IdOrderByCriadoEmAsc(registro.getId());
+        assertThat(anexos).hasSize(1);
+        assertThat(anexos.get(0).getNomeOriginal()).isEqualTo("evidencia-video.mp4");
+        assertThat(anexos.get(0).getContentType()).isEqualTo("video/mp4");
+        assertThat(anexos.get(0).getTamanho()).isEqualTo(16L * 1024L * 1024L);
+        assertThat(anexos.get(0).getCaminho()).endsWith(".mp4");
+        Path storedPath = uploadDirectory.resolve(anexos.get(0).getCaminho().substring("/uploads/".length()));
+        assertThat(Files.exists(storedPath)).isTrue();
+        assertThat(Files.size(storedPath)).isEqualTo(16L * 1024L * 1024L);
+    }
+
+    @Test
     void shouldRejectInvalidUpload() throws Exception {
         saveApiClient(VALID_API_KEY, true);
         TipoFato tipoFato = saveTipoFato("Conduta", true);
         long storedFilesBeforeRequest = countStoredRegistroFiles();
         MockMultipartFile invalidFile = new MockMultipartFile(
                 "anexos[]",
-                "evidencia.txt",
-                MediaType.TEXT_PLAIN_VALUE,
+                "script.exe",
+                MediaType.APPLICATION_OCTET_STREAM_VALUE,
                 "conteudo".getBytes()
         );
 
-        mockMvc.perform(validRequest("CE-2026-000009", tipoFato.getId())
+        mockMvc.perform(validRequest("CE-2026-000011", tipoFato.getId())
                         .file(png("anexos[]", "evidencia-valida.png"))
                         .file(invalidFile)
                         .header(HEADER_NAME, VALID_API_KEY))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("Arquivo invalido."));
+                .andExpect(jsonPath("$.message").value("Dados invalidos."));
 
-        assertThat(registroRepository.findByProtocolo("CE-2026-000009")).isEmpty();
+        assertThat(registroRepository.findByProtocolo("CE-2026-000011")).isEmpty();
         assertThat(countStoredRegistroFiles()).isEqualTo(storedFilesBeforeRequest);
     }
 
@@ -262,6 +307,42 @@ class RegistroPublicoControllerTest {
                 filename,
                 MediaType.IMAGE_JPEG_VALUE,
                 new byte[] {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0}
+        );
+    }
+
+    private MockMultipartFile pdf(String name, String filename) {
+        return new MockMultipartFile(
+                name,
+                filename,
+                MediaType.APPLICATION_PDF_VALUE,
+                "%PDF-1.7".getBytes()
+        );
+    }
+
+    private MockMultipartFile mp4(String name, String filename) {
+        return mp4(name, filename, 8);
+    }
+
+    private MockMultipartFile mp4(String name, String filename, int size) {
+        byte[] content = new byte[size];
+        content[4] = 0x66;
+        content[5] = 0x74;
+        content[6] = 0x79;
+        content[7] = 0x70;
+        return new MockMultipartFile(
+                name,
+                filename,
+                "video/mp4",
+                content
+        );
+    }
+
+    private MockMultipartFile mp3(String name, String filename) {
+        return new MockMultipartFile(
+                name,
+                filename,
+                "audio/mpeg",
+                new byte[] {0x49, 0x44, 0x33}
         );
     }
 
