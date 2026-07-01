@@ -1,5 +1,11 @@
 # Base+
 
+## Marco alcancado
+
+A primeira versao homologavel do Canal de Etica foi concluida.
+
+O sistema encontra-se operacional em ambiente Linux utilizando Docker, PostgreSQL e Spring Boot, podendo ser utilizado em ambiente de homologacao por usuarios reais.
+
 ## Visao
 
 A Base+ existe para servir como fundacao reutilizavel para aplicacoes corporativas.

@@ -2,6 +2,16 @@
 
 Este arquivo e o contexto principal para desenvolvimento assistido por IA no projeto Base+.
 
+## Estado atual - Canal de Etica Registros
+
+- MVP homologado: `v1.0.0-MVP`.
+- Backend concluido para o escopo homologavel.
+- Frontend concluido para o escopo homologavel.
+- Deploy homologado em ambiente Linux.
+- Docker homologado.
+- PostgreSQL homologado.
+- Proximo ciclo: Sprint 4.2 - Aplicacao das Heuristicas de Nielsen.
+
 ## Documentos operacionais
 
 - `README.md`: entrada geral do projeto.
@@ -14,8 +24,10 @@ Este arquivo e o contexto principal para desenvolvimento assistido por IA no pro
 - `docs/branding.md`: detalhes de branding e personalizacao.
 - `docs/permissions.md`: padrao de permissoes.
 - `docs/docker.md`: operacao Docker integrada, volumes, backup e restore.
+- `docs/HOMOLOGACAO.md`: ambiente homologado, variaveis e procedimentos operacionais.
 - `docs/release-1.0.md`: escopo fechado, validacao e proximos passos da versao 1.0.
 - `docs/release-1.1-checklist.md`: checklist oficial para fechamento da v1.1.0.
+- `docs/releases/v1.0.0-MVP.md`: release homologada do Canal de Etica Registros.
 - `docs/setup.md`: ambiente local e validacao.
 - `docs/integrations.md`: padrao para integracoes REST, SOAP, terceiros e legados.
 

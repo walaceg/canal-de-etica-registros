@@ -2,6 +2,55 @@
 
 Todas as mudancas relevantes do projeto devem ser registradas neste arquivo.
 
+## v1.0.0-MVP
+
+Data: 2026-07-01
+
+### Backend
+
+- Implementado cadastro publico de denuncias pelo endpoint `POST /api/public/v1/registros`.
+- Implementada autenticacao por API Key para a API publica do modulo `registros`.
+- Mantida autenticacao administrativa por JWT da plataforma Base+.
+- Documentado endpoint publico no Swagger/OpenAPI.
+- Configurado grupo OpenAPI do Canal de Etica.
+- Ativado Flyway para criacao e validacao do schema nos ambientes persistentes e de desenvolvimento.
+- Implementado upload de anexos usando a infraestrutura de storage existente.
+- Implementado download seguro de anexos para usuarios internos autenticados.
+- Criada consulta administrativa de registros.
+- Criado detalhamento administrativo de registro.
+- Aplicado controle por permissoes `REGISTROS_VIEW` e `REGISTROS_DETAIL`.
+- Criada politica de tipos e limites de anexos para documentos, imagens, videos e audios.
+
+### Frontend
+
+- Implementada tela publica para envio de denuncias.
+- Implementada listagem administrativa de registros.
+- Implementada tela de detalhe do registro.
+- Implementada visualizacao e download seguro de anexos via backend autenticado.
+- Implementados filtros recolhiveis na listagem administrativa.
+- Integrado controle de permissoes para acesso as telas do modulo.
+
+### Infraestrutura
+
+- Docker Compose homologado com PostgreSQL, backend e frontend.
+- PostgreSQL 16 homologado como banco persistente.
+- Volumes persistentes configurados para banco e uploads.
+- Deploy Linux homologado em openSUSE Leap 15.5.
+- Swagger/OpenAPI liberado para consulta anonima sem abrir APIs de negocio.
+- Colecao Postman criada para a API publica.
+- Homologacao da versao `v1.0.0-MVP` concluida.
+
+### Correcoes
+
+- Ajuste de compatibilidade entre Flyway e Hibernate `validate`.
+- Correcao do mapeamento `@Lob` x `TEXT` no campo de relato.
+- Swagger isolado para exibir somente APIs do Canal de Etica.
+- Ajuste de proxy Nginx para frontend, API e uploads.
+- Ajuste de CORS por configuracao de ambiente.
+- Bootstrap administrativo revisado para ambientes homologados.
+- Correcao de upload de videos validos.
+- Implementacao segura da visualizacao de anexos.
+
 ## 2026-06-26
 
 ### Release v1.1.0

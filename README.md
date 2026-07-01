@@ -2,7 +2,52 @@
 
 Aplicacao corporativa derivada da Base+ para preparacao do futuro Canal de Etica Registros.
 
-Esta etapa e apenas um bootstrap da aplicacao. Nenhuma funcionalidade de Canal de Etica foi implementada, nenhuma entidade de negocio foi criada, nenhum controller novo foi adicionado e nenhuma migration de dominio foi gerada.
+## Status do Projeto
+
+- Versao atual: `v1.0.0-MVP`
+- Status: `Homologado`
+- Data do marco: 2026-07-01
+
+Ambiente homologado:
+
+- openSUSE Leap 15.5
+- Docker 27
+- Docker Compose 2
+- PostgreSQL 16
+- Java 21
+- React
+- Spring Boot
+
+## Funcionalidades Entregues
+
+Backend:
+
+- Cadastro publico de denuncias
+- API Key
+- JWT
+- Swagger/OpenAPI
+- Flyway
+- Upload de anexos
+- Download seguro de anexos
+- Consulta administrativa
+- Controle por permissoes
+
+Frontend:
+
+- Tela publica
+- Consulta administrativa
+- Detalhamento
+- Visualizacao de anexos
+- Filtros recolhiveis
+- Controle de permissoes
+
+Infraestrutura:
+
+- Docker Compose
+- PostgreSQL
+- Volumes persistentes
+- Deploy Linux
+- Homologacao concluida
 
 ## Fundacao
 
@@ -31,7 +76,7 @@ Os nomes dos diretorios foram preservados neste bootstrap para evitar alteracao 
 
 Backend:
 
-- Java 17
+- Java 21
 - Spring Boot 3.3.5
 - Spring Security com JWT
 - JPA/Hibernate
@@ -142,11 +187,15 @@ Assets herdados da Base+ ainda existem como referencia/fallback e devem ser aval
 - `docs/new-application.md`
 - `docs/module-development.md`
 - `docs/docker.md`
+- `docs/HOMOLOGACAO.md`
+- `docs/releases/v1.0.0-MVP.md`
 - `docs/setup.md`
 
-## Limites deste Bootstrap
+## Historico do Bootstrap Inicial
 
-Nao foram criados:
+O bootstrap inicial preparou a aplicacao sem implementar regras especificas do Canal de Etica. Esse historico permanece registrado para preservar a rastreabilidade da evolucao a partir da Base+.
+
+Naquele momento nao haviam sido criados:
 
 - entidades de Canal de Etica;
 - controllers de Canal de Etica;
@@ -157,4 +206,4 @@ Nao foram criados:
 
 ## Proxima Etapa
 
-Antes de implementar funcionalidades, consolidar visao, publico, fluxo operacional, requisitos de sigilo, perfis de acesso, dados sensiveis, auditoria esperada e decisoes de branding.
+O proximo ciclo planejado e a Sprint 4.2, focada em UX, usabilidade e aplicacao das 10 Heuristicas de Nielsen nas telas do Canal de Etica.

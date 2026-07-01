@@ -1,4 +1,26 @@
-﻿# Roadmap Base+
+# Roadmap Base+
+
+## Canal de Etica Registros
+
+### Concluido
+
+- Sprint 1 - Modelo de Dados do Canal de Etica.
+- Sprint 2 - Seguranca por API Key.
+- Sprint 3 - API Publica de Recebimento de Registros.
+- Sprint 3.1 - Hardening da API Publica.
+- Sprint 3.2 - Liberacao e Configuracao do Swagger.
+- Sprint 3.3 - Swagger somente do Canal de Etica.
+- Sprint 4A - Backend do BackOffice: consulta de registros.
+- Sprint 4B - Frontend BackOffice: listagem de registros.
+- Sprint 4C - Frontend BackOffice: detalhe do registro.
+
+### Proximas fases
+
+- Sprint 4.2 - Aplicacao das 10 Heuristicas de Nielsen.
+- Sprint 5 - Workflow da denuncia.
+- Sprint 6 - Dashboard.
+- Sprint 7 - Auditoria.
+- Sprint 8 - Notificacoes.
 
 ## Curto prazo
 
