@@ -44,7 +44,7 @@ public class RegistroPublicoController {
     @Parameter(name = "X-API-Key", description = "API Key do cliente autorizado.", required = true, in = ParameterIn.HEADER)
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
-            description = "Formulario multipart com protocolo, tipoFatoId, relato e anexos opcionais.",
+            description = "Formulario multipart com protocolo, fato, relato e anexos opcionais.",
             content = @Content(
                     mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
                     schema = @Schema(implementation = CriarRegistroRequest.class),
@@ -53,7 +53,7 @@ public class RegistroPublicoController {
                             value = """
                                     {
                                       "protocolo": "CE-2026-000001",
-                                      "tipoFatoId": 1,
+                                      "fato": "Assedio moral",
                                       "relato": "Relato recebido pela API publica.",
                                       "nome": "Pessoa Relatora",
                                       "email": "relatora@example.com",
@@ -87,7 +87,7 @@ public class RegistroPublicoController {
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400",
-                    description = "Dados invalidos, tipo inativo ou upload invalido.",
+                    description = "Dados invalidos ou upload invalido.",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = @ExampleObject(value = """

@@ -13,6 +13,7 @@ public record RegistroDetalheResponse(
         String nome,
         String email,
         String telefone,
+        String fato,
         Long tipoFatoId,
         String tipoFatoNome,
         StatusRegistro status,

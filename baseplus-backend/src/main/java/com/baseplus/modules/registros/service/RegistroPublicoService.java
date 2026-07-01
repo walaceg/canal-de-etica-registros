@@ -18,12 +18,10 @@ import com.baseplus.core.storage.FileStorageService;
 import com.baseplus.core.storage.StoredFile;
 import com.baseplus.modules.registros.domain.Registro;
 import com.baseplus.modules.registros.domain.RegistroAnexo;
-import com.baseplus.modules.registros.domain.TipoFato;
 import com.baseplus.modules.registros.dto.CriarRegistroRequest;
 import com.baseplus.modules.registros.dto.CriarRegistroResponse;
 import com.baseplus.modules.registros.repository.RegistroAnexoRepository;
 import com.baseplus.modules.registros.repository.RegistroRepository;
-import com.baseplus.modules.registros.repository.TipoFatoRepository;
 import com.baseplus.modules.registros.service.RegistroAnexoValidator.ValidatedAnexo;
 
 @Service
@@ -37,20 +35,17 @@ public class RegistroPublicoService {
     private static final String EMAIL_PATTERN = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
 
     private final RegistroRepository registroRepository;
-    private final TipoFatoRepository tipoFatoRepository;
     private final RegistroAnexoRepository registroAnexoRepository;
     private final FileStorageService fileStorageService;
     private final RegistroAnexoValidator registroAnexoValidator;
 
     public RegistroPublicoService(
             RegistroRepository registroRepository,
-            TipoFatoRepository tipoFatoRepository,
             RegistroAnexoRepository registroAnexoRepository,
             FileStorageService fileStorageService,
             RegistroAnexoValidator registroAnexoValidator
     ) {
         this.registroRepository = registroRepository;
-        this.tipoFatoRepository = tipoFatoRepository;
         this.registroAnexoRepository = registroAnexoRepository;
         this.fileStorageService = fileStorageService;
         this.registroAnexoValidator = registroAnexoValidator;
@@ -59,21 +54,6 @@ public class RegistroPublicoService {
     @Transactional
     public CriarRegistroResponse criar(CriarRegistroRequest request) {
         ValidatedRegistroInput input = validateRequest(request);
-
-        TipoFato tipoFato = tipoFatoRepository.findById(input.tipoFatoId())
-                .orElseThrow(() -> new BusinessException(
-                        "Tipo de fato nao encontrado.",
-                        HttpStatus.NOT_FOUND,
-                        List.of("Tipo de fato informado nao existe.")
-                ));
-
-        if (!Boolean.TRUE.equals(tipoFato.getAtivo())) {
-            throw new BusinessException(
-                    "Tipo de fato inativo.",
-                    HttpStatus.BAD_REQUEST,
-                    List.of("Tipo de fato informado nao esta ativo.")
-            );
-        }
 
         if (registroRepository.existsByProtocolo(input.protocolo())) {
             throw protocoloDuplicado();
@@ -85,8 +65,7 @@ public class RegistroPublicoService {
                 input.email(),
                 input.telefone(),
                 input.relato(),
-                tipoFato,
-                tipoFato.getNome()
+                input.fato()
         );
 
         try {
@@ -119,11 +98,8 @@ public class RegistroPublicoService {
 
         List<String> errors = new ArrayList<>();
         String protocolo = requiredTrimmed(request.getProtocolo(), "Protocolo e obrigatorio.", errors);
+        String fato = requiredTrimmed(request.getFato(), "Fato e obrigatorio.", errors);
         String relato = requiredTrimmed(request.getRelato(), "Relato e obrigatorio.", errors);
-        Long tipoFatoId = request.getTipoFatoId();
-        if (tipoFatoId == null) {
-            errors.add("Tipo de fato e obrigatorio.");
-        }
 
         validateMaxLength(protocolo, PROTOCOLO_MAX_LENGTH, "Protocolo deve ter no maximo 80 caracteres.", errors);
 
@@ -145,7 +121,7 @@ public class RegistroPublicoService {
             throw dadosInvalidos(errors);
         }
 
-        return new ValidatedRegistroInput(protocolo, tipoFatoId, relato, nome, email, telefone, anexos);
+        return new ValidatedRegistroInput(protocolo, fato, relato, nome, email, telefone, anexos);
     }
 
     private int salvarAnexos(Registro registro, List<ValidatedAnexo> anexos, List<String> uploadedUrls) {
@@ -241,7 +217,7 @@ public class RegistroPublicoService {
 
     private record ValidatedRegistroInput(
             String protocolo,
-            Long tipoFatoId,
+            String fato,
             String relato,
             String nome,
             String email,

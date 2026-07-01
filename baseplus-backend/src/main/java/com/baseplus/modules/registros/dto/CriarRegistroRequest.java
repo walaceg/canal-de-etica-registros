@@ -2,11 +2,19 @@ package com.baseplus.modules.registros.dto;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class CriarRegistroRequest {
 
+    @Schema(description = "Protocolo gerado externamente.", requiredMode = Schema.RequiredMode.REQUIRED)
     private String protocolo;
-    private Long tipoFatoId;
+
+    @Schema(description = "Fato informado em texto livre pelo formulario externo.", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String fato;
+
+    @Schema(description = "Relato completo informado pelo denunciante.", requiredMode = Schema.RequiredMode.REQUIRED)
     private String relato;
+
     private String nome;
     private String email;
     private String telefone;
@@ -20,12 +28,12 @@ public class CriarRegistroRequest {
         this.protocolo = protocolo;
     }
 
-    public Long getTipoFatoId() {
-        return tipoFatoId;
+    public String getFato() {
+        return fato;
     }
 
-    public void setTipoFatoId(Long tipoFatoId) {
-        this.tipoFatoId = tipoFatoId;
+    public void setFato(String fato) {
+        this.fato = fato;
     }
 
     public String getRelato() {

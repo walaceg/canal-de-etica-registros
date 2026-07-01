@@ -27,11 +27,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.baseplus.modules.registros.domain.ApiClient;
 import com.baseplus.modules.registros.domain.Registro;
-import com.baseplus.modules.registros.domain.TipoFato;
 import com.baseplus.modules.registros.repository.ApiClientRepository;
 import com.baseplus.modules.registros.repository.RegistroAnexoRepository;
 import com.baseplus.modules.registros.repository.RegistroRepository;
-import com.baseplus.modules.registros.repository.TipoFatoRepository;
 import com.baseplus.modules.registros.security.ApiKeyHash;
 
 @SpringBootTest
@@ -57,9 +55,6 @@ class RegistroPublicoControllerTest {
     private ApiClientRepository apiClientRepository;
 
     @Autowired
-    private TipoFatoRepository tipoFatoRepository;
-
-    @Autowired
     private RegistroRepository registroRepository;
 
     @Autowired
@@ -70,15 +65,13 @@ class RegistroPublicoControllerTest {
         registroAnexoRepository.deleteAll();
         registroRepository.deleteAll();
         apiClientRepository.deleteAll();
-        tipoFatoRepository.deleteAll();
     }
 
     @Test
     void shouldCreateRegistroWithSuccess() throws Exception {
         saveApiClient(VALID_API_KEY, true);
-        TipoFato tipoFato = saveTipoFato("Conduta", true);
 
-        mockMvc.perform(validRequest("CE-2026-000001", tipoFato.getId())
+        mockMvc.perform(validRequest("CE-2026-000001")
                         .file(png("anexos[]", "evidencia.png"))
                         .header(HEADER_NAME, VALID_API_KEY))
                 .andExpect(status().isCreated())
@@ -91,25 +84,25 @@ class RegistroPublicoControllerTest {
                 .andExpect(jsonPath("$.errors").value(empty()));
 
         Registro registro = registroRepository.findByProtocolo("CE-2026-000001").orElseThrow();
-        assertThat(registro.getTipoFatoNome()).isEqualTo(tipoFato.getNome());
+        assertThat(registro.getFato()).isEqualTo("Assedio moral");
+        assertThat(registro.getTipoFato()).isNull();
+        assertThat(registro.getTipoFatoNome()).isNull();
         assertThat(registroAnexoRepository.findByRegistro_IdOrderByCriadoEmAsc(registro.getId())).hasSize(1);
     }
 
     @Test
     void shouldRejectDuplicatedProtocol() throws Exception {
         saveApiClient(VALID_API_KEY, true);
-        TipoFato tipoFato = saveTipoFato("Conduta", true);
         registroRepository.save(new Registro(
                 "CE-2026-000002",
                 null,
                 null,
                 null,
                 "Relato ja existente",
-                tipoFato,
-                tipoFato.getNome()
+                "Conduta antiga"
         ));
 
-        mockMvc.perform(validRequest("CE-2026-000002", tipoFato.getId())
+        mockMvc.perform(validRequest("CE-2026-000002")
                         .header(HEADER_NAME, VALID_API_KEY))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.success").value(false))
@@ -117,33 +110,33 @@ class RegistroPublicoControllerTest {
     }
 
     @Test
-    void shouldRejectUnknownTipoFato() throws Exception {
+    void shouldRejectMissingFato() throws Exception {
         saveApiClient(VALID_API_KEY, true);
 
-        mockMvc.perform(validRequest("CE-2026-000003", 999999L)
-                        .header(HEADER_NAME, VALID_API_KEY))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("Tipo de fato nao encontrado."));
-    }
-
-    @Test
-    void shouldRejectInactiveTipoFato() throws Exception {
-        saveApiClient(VALID_API_KEY, true);
-        TipoFato tipoFato = saveTipoFato("Conduta inativa", false);
-
-        mockMvc.perform(validRequest("CE-2026-000004", tipoFato.getId())
+        mockMvc.perform(validRequest("CE-2026-000003", "   ")
                         .header(HEADER_NAME, VALID_API_KEY))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("Tipo de fato inativo."));
+                .andExpect(jsonPath("$.message").value("Dados invalidos."))
+                .andExpect(jsonPath("$.errors[0]").value("Fato e obrigatorio."));
+    }
+
+    @Test
+    void shouldTrimFatoBeforeSaving() throws Exception {
+        saveApiClient(VALID_API_KEY, true);
+
+        mockMvc.perform(validRequest("CE-2026-000004", "   Uso indevido de dados   ")
+                        .header(HEADER_NAME, VALID_API_KEY))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true));
+
+        Registro registro = registroRepository.findByProtocolo("CE-2026-000004").orElseThrow();
+        assertThat(registro.getFato()).isEqualTo("Uso indevido de dados");
     }
 
     @Test
     void shouldRejectRequestWithoutApiKey() throws Exception {
-        TipoFato tipoFato = saveTipoFato("Conduta", true);
-
-        mockMvc.perform(validRequest("CE-2026-000005", tipoFato.getId()))
+        mockMvc.perform(validRequest("CE-2026-000005"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.success").value(false))
                 .andExpect(jsonPath("$.message").value("Acesso nao autorizado."));
@@ -152,9 +145,8 @@ class RegistroPublicoControllerTest {
     @Test
     void shouldRejectRequestWithInvalidApiKey() throws Exception {
         saveApiClient(VALID_API_KEY, true);
-        TipoFato tipoFato = saveTipoFato("Conduta", true);
 
-        mockMvc.perform(validRequest("CE-2026-000006", tipoFato.getId())
+        mockMvc.perform(validRequest("CE-2026-000006")
                         .header(HEADER_NAME, "chave-invalida"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.success").value(false))
@@ -164,9 +156,8 @@ class RegistroPublicoControllerTest {
     @Test
     void shouldCreateRegistroWithoutAttachments() throws Exception {
         saveApiClient(VALID_API_KEY, true);
-        TipoFato tipoFato = saveTipoFato("Assedio moral", true);
 
-        mockMvc.perform(validRequest("CE-2026-000007", tipoFato.getId())
+        mockMvc.perform(validRequest("CE-2026-000007")
                         .header(HEADER_NAME, VALID_API_KEY))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
@@ -179,9 +170,8 @@ class RegistroPublicoControllerTest {
     @Test
     void shouldCreateRegistroWithMultipleAttachments() throws Exception {
         saveApiClient(VALID_API_KEY, true);
-        TipoFato tipoFato = saveTipoFato("Corrupcao", true);
 
-        mockMvc.perform(validRequest("CE-2026-000008", tipoFato.getId())
+        mockMvc.perform(validRequest("CE-2026-000008")
                         .file(png("anexos[]", "evidencia-1.png"))
                         .file(jpeg("anexos[]", "evidencia-2.jpg"))
                         .header(HEADER_NAME, VALID_API_KEY))
@@ -203,9 +193,8 @@ class RegistroPublicoControllerTest {
     @Test
     void shouldCreateRegistroWithCorporateAttachmentTypes() throws Exception {
         saveApiClient(VALID_API_KEY, true);
-        TipoFato tipoFato = saveTipoFato("Anexos corporativos", true);
 
-        mockMvc.perform(validRequest("CE-2026-000009", tipoFato.getId())
+        mockMvc.perform(validRequest("CE-2026-000009")
                         .file(pdf("anexos[]", "documento.pdf"))
                         .file(png("anexos[]", "imagem.png"))
                         .file(mp4("anexos[]", "video.mp4"))
@@ -224,9 +213,8 @@ class RegistroPublicoControllerTest {
     @Test
     void shouldCreateRegistroWithValidSixteenMbVideo() throws Exception {
         saveApiClient(VALID_API_KEY, true);
-        TipoFato tipoFato = saveTipoFato("Video valido", true);
 
-        mockMvc.perform(validRequest("CE-2026-000010", tipoFato.getId())
+        mockMvc.perform(validRequest("CE-2026-000010")
                         .file(mp4("anexos[]", "evidencia-video.mp4", 16 * 1024 * 1024))
                         .header(HEADER_NAME, VALID_API_KEY))
                 .andExpect(status().isCreated())
@@ -248,7 +236,6 @@ class RegistroPublicoControllerTest {
     @Test
     void shouldRejectInvalidUpload() throws Exception {
         saveApiClient(VALID_API_KEY, true);
-        TipoFato tipoFato = saveTipoFato("Conduta", true);
         long storedFilesBeforeRequest = countStoredRegistroFiles();
         MockMultipartFile invalidFile = new MockMultipartFile(
                 "anexos[]",
@@ -257,7 +244,7 @@ class RegistroPublicoControllerTest {
                 "conteudo".getBytes()
         );
 
-        mockMvc.perform(validRequest("CE-2026-000011", tipoFato.getId())
+        mockMvc.perform(validRequest("CE-2026-000011")
                         .file(png("anexos[]", "evidencia-valida.png"))
                         .file(invalidFile)
                         .header(HEADER_NAME, VALID_API_KEY))
@@ -269,10 +256,14 @@ class RegistroPublicoControllerTest {
         assertThat(countStoredRegistroFiles()).isEqualTo(storedFilesBeforeRequest);
     }
 
-    private org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder validRequest(String protocolo, Long tipoFatoId) {
+    private org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder validRequest(String protocolo) {
+        return validRequest(protocolo, "Assedio moral");
+    }
+
+    private org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder validRequest(String protocolo, String fato) {
         org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder builder = multipart(ENDPOINT);
         builder.param("protocolo", protocolo);
-        builder.param("tipoFatoId", tipoFatoId.toString());
+        builder.param("fato", fato);
         builder.param("relato", "Relato inicial recebido pela API publica.");
         builder.param("nome", "Pessoa Relatora");
         builder.param("email", "relatora@example.com");
@@ -286,10 +277,6 @@ class RegistroPublicoControllerTest {
                 ApiKeyHash.sha256(apiKey),
                 ativo
         ));
-    }
-
-    private TipoFato saveTipoFato(String nome, boolean ativo) {
-        return tipoFatoRepository.saveAndFlush(new TipoFato(nome + " " + UUID.randomUUID(), ativo, 1));
     }
 
     private MockMultipartFile png(String name, String filename) {

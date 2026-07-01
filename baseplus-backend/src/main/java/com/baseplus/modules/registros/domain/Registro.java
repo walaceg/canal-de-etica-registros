@@ -40,11 +40,14 @@ public class Registro {
     @Column(nullable = false, updatable = false, columnDefinition = "text")
     private String relato;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "tipo_fato_id", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, columnDefinition = "text")
+    private String fato;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tipo_fato_id", updatable = false)
     private TipoFato tipoFato;
 
-    @Column(nullable = false, updatable = false, length = 180)
+    @Column(updatable = false, length = 180)
     private String tipoFatoNome;
 
     @Enumerated(EnumType.STRING)
@@ -70,6 +73,30 @@ public class Registro {
             String email,
             String telefone,
             String relato,
+            String fato
+    ) {
+        this(protocolo, nome, email, telefone, relato, fato, null, null);
+    }
+
+    public Registro(
+            String protocolo,
+            String nome,
+            String email,
+            String telefone,
+            String relato,
+            TipoFato tipoFato,
+            String tipoFatoNome
+    ) {
+        this(protocolo, nome, email, telefone, relato, tipoFatoNome, tipoFato, tipoFatoNome);
+    }
+
+    private Registro(
+            String protocolo,
+            String nome,
+            String email,
+            String telefone,
+            String relato,
+            String fato,
             TipoFato tipoFato,
             String tipoFatoNome
     ) {
@@ -78,6 +105,7 @@ public class Registro {
         this.email = email;
         this.telefone = telefone;
         this.relato = relato;
+        this.fato = fato;
         this.tipoFato = tipoFato;
         this.tipoFatoNome = tipoFatoNome;
     }
@@ -126,6 +154,10 @@ public class Registro {
 
     public String getRelato() {
         return relato;
+    }
+
+    public String getFato() {
+        return fato;
     }
 
     public TipoFato getTipoFato() {

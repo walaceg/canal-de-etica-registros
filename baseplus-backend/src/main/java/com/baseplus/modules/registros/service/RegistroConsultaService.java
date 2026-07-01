@@ -151,6 +151,7 @@ public class RegistroConsultaService {
         return new RegistroResumoResponse(
                 registro.getId(),
                 registro.getProtocolo(),
+                registro.getFato(),
                 registro.getTipoFatoNome(),
                 registro.getStatus(),
                 registro.getOrigem(),
@@ -169,7 +170,8 @@ public class RegistroConsultaService {
                 registro.getNome(),
                 registro.getEmail(),
                 registro.getTelefone(),
-                registro.getTipoFato().getId(),
+                registro.getFato(),
+                registro.getTipoFato() == null ? null : registro.getTipoFato().getId(),
                 registro.getTipoFatoNome(),
                 registro.getStatus(),
                 registro.getOrigem(),

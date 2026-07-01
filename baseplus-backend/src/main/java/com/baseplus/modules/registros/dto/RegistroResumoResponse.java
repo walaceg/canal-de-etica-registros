@@ -9,6 +9,7 @@ import com.baseplus.modules.registros.domain.StatusRegistro;
 public record RegistroResumoResponse(
         UUID id,
         String protocolo,
+        String fato,
         String tipoFatoNome,
         StatusRegistro status,
         OrigemRegistro origem,
