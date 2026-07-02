@@ -27,7 +27,7 @@ export function RegistroHeader({ registro }) {
         }
       />
       <InfoItem label="Origem" value={<Badge variant="secondary">{formatValue(registro.origem)}</Badge>} />
-      <InfoItem label="Tipo de Fato" value={registro.tipoFatoNome} />
+      <InfoItem label="Fato" value={registro.fato ?? registro.tipoFatoNome} />
       <InfoItem label="Criado em" value={formatDateTime(registro.criadoEm)} />
       <InfoItem label="Atualizado em" value={formatDateTime(registro.atualizadoEm)} />
     </section>

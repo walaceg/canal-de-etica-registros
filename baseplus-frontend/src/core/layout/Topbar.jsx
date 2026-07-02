@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { BrandingLogo, Button } from '../../shared/components/index.js';
 import { useBranding } from '../../shared/branding/useBranding.js';
 import { useAuth } from '../auth/useAuth.js';
@@ -16,25 +16,25 @@ export function Topbar({ menuPrincipal = 'sidebar' }) {
   const { branding, assetVersion } = useBranding();
   const { menuPrincipal: activeMenuPrincipal, setMenuPrincipal } = useTheme();
   const navigate = useNavigate();
-  const adminMenuRef = useRef(null);
+  const navigationMenuRef = useRef(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+  const [openNavigationMenu, setOpenNavigationMenu] = useState(null);
   const showPrimaryNavigation = menuPrincipal === 'topbar';
   const compactBrandLogoUrl = branding.compactLogoUrl || branding.logoUrl;
   const navigationGroups = useMemo(() => getAuthorizedNavigationGroups(hasPermission), [hasPermission]);
 
   useEffect(() => {
     function handleClickOutside(event) {
-      const clickedInsideAdminMenu = adminMenuRef.current && adminMenuRef.current.contains(event.target);
+      const clickedInsideNavigationMenu = navigationMenuRef.current && navigationMenuRef.current.contains(event.target);
 
-      if (!clickedInsideAdminMenu) {
-        setAdminMenuOpen(false);
+      if (!clickedInsideNavigationMenu) {
+        setOpenNavigationMenu(null);
       }
     }
 
     function handleEscape(event) {
       if (event.key === 'Escape') {
-        setAdminMenuOpen(false);
+        setOpenNavigationMenu(null);
       }
     }
 
@@ -49,7 +49,7 @@ export function Topbar({ menuPrincipal = 'sidebar' }) {
 
   async function handleSignOut() {
     setUserMenuOpen(false);
-    setAdminMenuOpen(false);
+    setOpenNavigationMenu(null);
     await signOut();
   }
 
@@ -61,16 +61,16 @@ export function Topbar({ menuPrincipal = 'sidebar' }) {
   function changeMenuPrincipal(mode) {
     setMenuPrincipal(mode);
     setUserMenuOpen(false);
-    setAdminMenuOpen(false);
+    setOpenNavigationMenu(null);
   }
 
-  function toggleAdminMenu() {
+  function toggleNavigationMenu(menuTitle) {
     setUserMenuOpen(false);
-    setAdminMenuOpen((current) => !current);
+    setOpenNavigationMenu((current) => (current === menuTitle ? null : menuTitle));
   }
 
-  function closeAdminMenu() {
-    setAdminMenuOpen(false);
+  function closeNavigationMenu() {
+    setOpenNavigationMenu(null);
   }
 
   return (
@@ -96,47 +96,54 @@ export function Topbar({ menuPrincipal = 'sidebar' }) {
           </div>
 
           {showPrimaryNavigation ? (
-            <div className="bp-topbar__admin" ref={adminMenuRef}>
-              <Button
-                aria-expanded={adminMenuOpen}
-                aria-haspopup="menu"
-                className="bp-topbar__admin-trigger"
-                variant="ghost"
-                onClick={toggleAdminMenu}
-              >
-                <span className="bp-topbar__admin-trigger-icon" aria-hidden="true">
-                  <Building2 size={16} strokeWidth={2.2} />
-                </span>
-                <span className="bp-topbar__admin-trigger-label">Administração</span>
-                <ChevronDown className="bp-topbar__chevron" size={14} aria-hidden="true" />
-              </Button>
+            <div className="bp-topbar__navigation" ref={navigationMenuRef}>
+              {navigationGroups.map((group) => {
+                const GroupIcon = group.icon;
+                const menuOpen = openNavigationMenu === group.title;
 
-              {adminMenuOpen ? (
-                <div className="bp-topbar__admin-menu" role="menu" aria-label="Administração">
-                  {navigationGroups.map((group) => (
-                    <section className="bp-topbar__admin-section" key={group.title}>
-                      <p className="bp-topbar__admin-section-title">
-                        <span className="bp-topbar__admin-section-icon" aria-hidden="true">
-                          <group.icon size={12} strokeWidth={2.2} />
-                        </span>
-                        <span>{group.title}</span>
-                      </p>
-                      <div className="bp-topbar__admin-items">
-                        {group.items.map((item) => (
-                          <NavItem
-                            key={item.to}
-                            icon={item.icon}
-                            label={item.label}
-                            to={item.to}
-                            variant="topbar"
-                            onClick={closeAdminMenu}
-                          />
-                        ))}
+                return (
+                  <div className="bp-topbar__admin" key={group.title}>
+                    <Button
+                      aria-expanded={menuOpen}
+                      aria-haspopup="menu"
+                      className="bp-topbar__admin-trigger"
+                      variant="ghost"
+                      onClick={() => toggleNavigationMenu(group.title)}
+                    >
+                      <span className="bp-topbar__admin-trigger-icon" aria-hidden="true">
+                        <GroupIcon size={16} strokeWidth={2.2} />
+                      </span>
+                      <span className="bp-topbar__admin-trigger-label">{group.title}</span>
+                      <ChevronDown className="bp-topbar__chevron" size={14} aria-hidden="true" />
+                    </Button>
+
+                    {menuOpen ? (
+                      <div className="bp-topbar__admin-menu" role="menu" aria-label={group.title}>
+                        <section className="bp-topbar__admin-section">
+                          <p className="bp-topbar__admin-section-title">
+                            <span className="bp-topbar__admin-section-icon" aria-hidden="true">
+                              <GroupIcon size={12} strokeWidth={2.2} />
+                            </span>
+                            <span>{group.title}</span>
+                          </p>
+                          <div className="bp-topbar__admin-items">
+                            {group.items.map((item) => (
+                              <NavItem
+                                key={item.to}
+                                icon={item.icon}
+                                label={item.label}
+                                to={item.to}
+                                variant="topbar"
+                                onClick={closeNavigationMenu}
+                              />
+                            ))}
+                          </div>
+                        </section>
                       </div>
-                    </section>
-                  ))}
-                </div>
-              ) : null}
+                    ) : null}
+                  </div>
+                );
+              })}
             </div>
           ) : null}
         </div>
@@ -147,7 +154,7 @@ export function Topbar({ menuPrincipal = 'sidebar' }) {
           onOpenChange={(nextOpen) => {
             setUserMenuOpen(nextOpen);
             if (nextOpen) {
-              setAdminMenuOpen(false);
+              setOpenNavigationMenu(null);
             }
           }}
           onRequestAccount={goToAccount}

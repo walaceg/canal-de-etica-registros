@@ -39,8 +39,8 @@
               "type": "text"
             },
             {
-              "key": "tipoFatoId",
-              "value": "1",
+              "key": "fato",
+              "value": "Assedio moral",
               "type": "text"
             },
             {
@@ -82,7 +82,7 @@
             "registros"
           ]
         },
-        "description": "Cria um registro publico com anexo opcional. Selecione um arquivo PNG, JPG ou ICO no campo anexos[]."
+        "description": "Cria um registro publico com anexo opcional. Informe fato em texto livre e selecione um arquivo permitido no campo anexos[]."
       },
       "response": []
     },
@@ -100,8 +100,8 @@
               "type": "text"
             },
             {
-              "key": "tipoFatoId",
-              "value": "1",
+              "key": "fato",
+              "value": "Conduta",
               "type": "text"
             },
             {

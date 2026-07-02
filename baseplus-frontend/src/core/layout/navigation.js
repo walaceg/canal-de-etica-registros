@@ -13,31 +13,31 @@ import {
 import { PERMISSIONS } from '../../shared/auth/permissions.js';
 
 export const moduleNavigation = {
-  title: 'Administracao',
-  subtitle: 'Admin',
+  title: 'Navegacao',
+  subtitle: 'Menu principal',
   icon: Building2,
 };
 
 export const navigationGroups = [
   {
-    title: 'Geral',
+    title: 'Dashboard',
     icon: LayoutDashboard,
     items: [{ icon: LayoutDashboard, label: 'Dashboard', permission: PERMISSIONS.DASHBOARD_VIEW, to: '/app/dashboard' }],
-  },
-  {
-    title: 'Acesso',
-    icon: Shield,
-    items: [
-      { icon: Users, label: 'Usuarios', permission: PERMISSIONS.USERS_VIEW, to: '/app/usuarios' },
-      { icon: Shield, label: 'Perfis', permission: PERMISSIONS.ROLES_VIEW, to: '/app/roles' },
-      { icon: ShieldCheck, label: 'Permissoes', permission: PERMISSIONS.PERMISSIONS_VIEW, to: '/app/permissions' },
-    ],
   },
   {
     title: 'Canal de Ética',
     icon: ClipboardList,
     items: [
       { icon: ClipboardList, label: 'Registros', permission: PERMISSIONS.REGISTROS_VIEW, to: '/app/registros' },
+    ],
+  },
+  {
+    title: 'Administracao',
+    icon: Shield,
+    items: [
+      { icon: Users, label: 'Usuarios', permission: PERMISSIONS.USERS_VIEW, to: '/app/usuarios' },
+      { icon: Shield, label: 'Perfis', permission: PERMISSIONS.ROLES_VIEW, to: '/app/roles' },
+      { icon: ShieldCheck, label: 'Permissoes', permission: PERMISSIONS.PERMISSIONS_VIEW, to: '/app/permissions' },
     ],
   },
   {

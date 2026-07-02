@@ -268,9 +268,9 @@ export function RegistrosPage() {
       render: (row) => <strong>{row.protocolo}</strong>,
     },
     {
-      key: 'tipoFatoNome',
-      header: 'Tipo',
-      render: (row) => <span>{formatValue(row.tipoFatoNome)}</span>,
+      key: 'fato',
+      header: 'Fato',
+      render: (row) => <span>{formatValue(row.fato ?? row.tipoFatoNome)}</span>,
     },
     {
       key: 'status',
